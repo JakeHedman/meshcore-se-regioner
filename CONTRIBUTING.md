@@ -20,6 +20,7 @@ Du kan också öppna ett issue i stället för en pull request.
   1. En förkortning som folk på orten redan använder (`gbg`, `jkp`, `vxo`).
   2. Annars de tre första bokstäverna i kommunnamnet.
 - Krockar två kommuner i samma län behåller den större sin naturliga kod.
+- Reglerna är till för att fylla luckor. Vet du vad orten kallas går det före dem.
 
 ## Kolumnen `grund`
 
