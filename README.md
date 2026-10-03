@@ -71,6 +71,26 @@ se - jkp - mul
 Hela listan över alla 290 kommuner finns i [REGIONER.md](REGIONER.md). Källan är
 [data/regioner.csv](data/regioner.csv).
 
+### Vem koden kommer från
+
+Koden bestäms där den används. En kommunkod angår kommunen, en länskod angår länet, och ingen av dem
+behöver ett ja ovanifrån.
+
+- **Vedertaget är lokalt.** Vad en ort kallas vet folk på orten. Listan här är ett utgångsläge, och
+  den som bor där har sista ordet om sin egen kod.
+- **Unik där den används, inte överallt.** En kommunkod behöver bara vara unik inom sitt län. Två
+  län kan använda `hab` utan att något går sönder, och vad ett län i ett annat land kallar sina
+  kommuner spelar ingen roll alls.
+- **Lokal logik går före en nationell regel.** Reglerna ovan är till för att ge varje kommun en kod
+  utan att någon behöver fråga. Säger orten något annat är det orten som stämmer, och regeln som
+  fick fylla luckan.
+- **Länskoden följer samma ordning.** Den angår de som delar länet. Ett län som vill ha en annan kod
+  än den här listan föreslår ändrar den.
+
+Det här är redan ungefär hur listan har vuxit fram: 12 koder är vedertagna och 257 är de tre första
+bokstäverna, alltså en gissning i väntan på någon som vet bättre. Skillnaden är att gissningen inte
+blir riktig förrän orten har sagt sitt.
+
 ### Länen
 
 | Län | Region | Ersätter |
