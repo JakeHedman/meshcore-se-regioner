@@ -301,7 +301,8 @@ På äldre firmware finns inte `region def`. Då läggs varje namn till för sig
 följt av `region allowf <namn>`.
 
 **Grannlän (valfritt):** en kantrepeater kan också bära grannlänets kod, till exempel `se-vgr`, så
-att folk nära den kan delta i grannlänets kanaler. Alla andra når grannlänet genom `se`.
+att folk nära den kan delta i grannlänets kanaler. Alla andra når grannlänet genom `se`. Vilka län
+som räknas som grannlän för din kommun står i [REGIONER.md](REGIONER.md), se [Grannlän](#grannlän).
 
 **Kantrepeater som enda repeater:** en kantrepeater skickar inte vidare närboende som saknar scope.
 Undvik därför att göra den enda repeatern på en ort till kantrepeater.
@@ -421,6 +422,67 @@ också bär grannlänets kod `se-vgr`.
 En ny användare som inte har satt något scope når alltså fortfarande hela sitt län. Meddelandena
 tar sig bara inte över till nästa län.
 
+## Grannlän
+
+Radio bryr sig inte om länsgränser, och över vatten når den längre än över land. Ett grannlän är
+därför inte bara ett län som delar gräns med ditt, utan ett län som ligger **inom räckhåll** från
+din kommun. Listan i [data/grannlan.csv](data/grannlan.csv) är ett utgångsläge, framräknat så här:
+
+- Varje läns landyta utökas **40 km** åt alla håll, och **80 km** där vägen går över öppet vatten
+  från länets egen strand. Som vatten räknas havet och de större sjöarna, till exempel Vänern,
+  Vättern och Mälaren.
+- Varje kommun i ett annat län som den utökade ytan når får länet som grannlän.
+- Ett par gäller alltid åt båda håll. Når bara den ena sidan den andra får den närmaste kommunen
+  på andra sidan också länken.
+
+Det ger 259 av 290 kommuner minst ett grannlän. Mullsjö får `se-vgr` och `se-ost`, Lidköping får
+`se-var` tvärs över Vänern, och Gotland får `se-kal` och `se-sth`.
+
+Listan säger var en kantrepeater *kan* behövas, inte att den behövs. Den bygger på avstånd på
+kartan och vet ingenting om terräng, antennhöjd eller vilka repeatrar som faktiskt hör varandra.
+Avgörandet är fortfarande det som står under [Steg 1](#steg-1-kontrollera-firmware-och-hitta-dina-koder):
+pratar repeatern regelbundet med repeatrar i ett annat län?
+
+**Manuella justeringar är välkomna.** Listan är uträknad, inte uppmätt, och den som är på plats vet
+bäst. Hör din kommun ett län som saknas, eller står det ett län där som ingen repeater hos er når:
+lägg till eller ta bort raden och skicka en pull request. En rad som någon har lagt till för hand
+märks `lokal`. Se [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### Så är listan framräknad
+
+Listan är framräknad en gång och ligger som färdig data i [data/grannlan.csv](data/grannlan.csv).
+Så här gick det till:
+
+1. **Kommunernas landyta.** Kommungränserna kommer från OpenStreetMap. De sträcker sig ut i havet,
+   så varje kommun skärs mot en landkarta: Natural Earth i skala 1:10 miljoner, land och småöar
+   minus sjöar. Länets landyta är kommunernas landytor sammanslagna.
+2. **40 km åt alla håll.** Länets landyta utökas med 40 km. Varje kommun i ett annat län vars
+   landyta den utökade ytan når får länet som grannlän, med `via` satt till `land`. Avståndet är
+   fågelvägen, så en smal sjö eller vik på vägen spelar ingen roll.
+3. **80 km över vatten.** Från länets strand utökas vattnet med 80 km, men bara vatten som hänger
+   ihop med den stranden räknas. Kommuner som nås den vägen, och inte redan i steg 2, får `via`
+   satt till `vatten`.
+4. **Båda håll.** Når län A en kommun i län B, men ingen kommun i A nås från B, får den kommun i A
+   som ligger närmast också länken, med `via` satt till `omvand`. Det gäller en enda rad: Gävle
+   och Stockholms län.
+
+Avstånden är mätta i SWEREF 99 TM, i meter.
+
+Det här förklarar några saker i listan som annars ser konstiga ut:
+
+- **Bara de större sjöarna är vatten.** Natural Earth har Vänern, Vättern, Mälaren, Hjälmaren,
+  Siljan, Storsjön, Bolmen, Åsnen och liknande. Mindre sjöar räknas som land.
+- **Fri sikt kontrolleras inte.** Öar och uddar mellan två stränder ignoreras.
+- **Kustlinjen är grov.** De minsta skären saknas, så avstånd över hav kan vara några kilometer
+  för långa.
+- **Länkar nära en gräns är känsliga.** Med 10 och 40 km blir det 42 par av län och Gotland får
+  inget grannlän, eftersom det är 59 km till Öland. Med 50 och 100 km blir det 56 par. Med 40 och
+  80 km blir det 50.
+
+Skriptet som räknade fram filen ligger inte i det här repot, eftersom det behöver kommungränserna
+och landkartan. Det som granskas här är resultatet: `scripts/build.py` kontrollerar att varje rad
+pekar på en kommun och ett län som finns, och att varje par gäller åt båda håll.
+
 ## Bra att veta
 
 - **Meddelanden med scope är ungefär tio tecken kortare.**
@@ -444,6 +506,7 @@ Det här är inte avgjort, och synpunkter är välkomna som issues eller pull re
    har inte testats på en repeater med de nya namnen, och inte ihop med befintliga `seXX`-namn.
 3. **Var går kanten?** Förslaget lägger kantrepeatrarna vid länsgränserna. I stora län som Västra
    Götaland kan det vara för grovt, och i tätbebyggda områden som korsar en länsgräns för fint.
+   Gränserna 40 km över land och 80 km över vatten i [Grannlän](#grannlän) är en första gissning.
 4. **Är kommun rätt lägsta nivå överallt?** I Stockholm är det troligen länet som är det verkliga
    närområdet. Kommunkoden finns för alla, men behöver inte användas överallt.
 5. **MQTT-koderna.** meshat.se använder flygplatskoder per län för MQTT. Kan länskoderna här ersätta

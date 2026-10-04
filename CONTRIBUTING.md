@@ -34,6 +34,24 @@ Du kan också öppna ett issue i stället för en pull request.
 Vill du flytta en kod från `kandidat` till `vedertagen`, eller tillbaka till `reserv`: skriv att du bor
 eller är aktiv på orten och vad ni faktiskt säger. Det väger tyngre än en webbsökning.
 
+## Ändra ett grannlän
+
+[data/grannlan.csv](data/grannlan.csv) har en rad per kommun och grannlän. Listan är framräknad
+från avstånd på kartan, se *Grannlän* i [README.md](README.md#grannlän). Vet du att din kommun
+har kontakt med ett län som saknas, eller saknar kontakt med ett som står där: ändra filen.
+
+1. Lägg till eller ta bort raden i `data/grannlan.csv`. Sätt `via` till `lokal` på rader du lägger till.
+2. Ett par ska gälla åt båda håll. Lägger du till Värmland för en kommun i Dalarna måste minst en
+   kommun i Värmland ha Dalarna.
+3. Kör `python3 scripts/build.py` och skicka en pull request med `data/grannlan.csv` och `REGIONER.md`.
+
+| `via` | Betyder |
+| --- | --- |
+| `land` | Länets landyta ligger inom 40 km, fågelvägen. |
+| `vatten` | Längre bort än 40 km, men inom 80 km över öppet vatten. |
+| `omvand` | Tillagd för att paret ska gälla åt båda håll. |
+| `lokal` | Tillagd av någon som känner till trakten. Skriv i pull requesten vad du vet. |
+
 ## Ändra själva förslaget
 
 Texten i `README.md` går också att ändra med en pull request. Större ändringar (nivåer, utrullning,
