@@ -430,6 +430,9 @@ Efter blockeringen ska `*` sakna `F` i `region`; kör `region save` och kontroll
 Ett alternativ att pröva är `set flood.max.unscoped 3`. Det begränsar trafik utan scope till tre
 hopp och kan också bryta nödvändiga vägar. Dokumentera tidigare värde och kontrollera det med
 `get flood.max.unscoped` efter ändringen och omstart. `set` sparar inställningen direkt.
+Om tidigare värde är `255` (följer `flood.max`) kan CLI i firmware 1.16 inte återställa det
+med `set`, som bara accepterar 0–64. Ändra då inte hoppgränsen förrän fullständig återställning
+av den tidigare inställningen har verifierats.
 
 ### Återställning
 
