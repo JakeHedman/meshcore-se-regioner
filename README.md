@@ -41,7 +41,7 @@ Nivåerna anger målgruppen; faktisk nåbarhet avgörs av radiovägar, tillåtna
 
 Om förslaget antas efter pilot och alla faser är klara:
 
-- **Repeatrar** bär sin kommun, sitt län, `se` och `eu`, plus eventuella överenskomna scopes för transit.
+- **Repeatrar** bär sin kommun, sitt län, `se` och `eu`.
 - **Bottar** använder sin kommun, så att de håller sig lokala.
 - **Companions** har `se` som standard, för att möjliggöra DM på radiovägar som tillåter `se`.
 - **Public** använder `se`, om nationell Public antas separat efter pilot.
