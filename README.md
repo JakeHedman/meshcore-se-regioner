@@ -1,7 +1,7 @@
 # Förslag: svenska MeshCore-regioner med namn folk kan
 
 > **Förslag för diskussion – inte antaget.**
-> Gäller Sverige · repeater-firmware 1.16+ rekommenderas · MeshCore-appen 1.43+
+> Gäller Sverige · repeater-firmware 1.16+ rekommenderas · companion-firmware 1.15+ · MeshCore-appen 1.43+
 
 Regioner (scopes) hindrar lokalt prat från att flooda hela nätet. I dag heter de svenska regionerna
 efter SCB:s sifferkoder, till exempel `se06` och `se0680`, som nästan ingen kan utantill. Det här
@@ -21,7 +21,7 @@ Se [CONTRIBUTING.md](CONTRIBUTING.md) och skicka en pull request.
 | --- | --- | --- |
 | Använder MeshCore-appen med en companion | **Inget än.** Låt inställningarna vara. [Fas 2](#fas-2-companions) består av två inställningar. | Tidigast när fas 1 är klar |
 | Äger en repeater | Inget förrän förslaget är antaget. Sedan [fas 1](#fas-1-repeatrar). | När förslaget är antaget |
-| Kör en bot | Sätt den till din kommun, se [Bottar](#bottar). | I slutet av fas 1 |
+| Kör en bot | Sätt den till din kommun, se [Bottar](#bottar). | I fas 2, efter verifierad pilot |
 | Vet vad din ort kallas | Kontrollera koden i [REGIONER.md](REGIONER.md) och föreslå en bättre. | Nu |
 
 Resten av sidan förklarar hur allt hänger ihop. Du behöver inte förstå det för att följa stegen.
@@ -38,15 +38,15 @@ När du skickar ett meddelande avgör scopet hur långt det färdas.
 | Sverige | `se` | Alla repeatrar i Sverige. |
 | Europa | `eu` | Reserverad för senare. Bärs nu, används inte än. |
 
-När alla faser är klara:
+Om förslaget antas efter pilot och alla faser är klara:
 
 - **Repeatrar** bär sin kommun, sitt län, `se` och `eu`.
 - **Bottar** använder sin kommun, så att de håller sig lokala.
-- **Companions** har `se` som standard, så att direktmeddelanden når vem som helst.
-- **Public** använder `se`, så att alla i Sverige kan prata.
+- **Companions** har `se` som standard, för att möjliggöra DM på radiovägar som tillåter `se`.
+- **Public** använder `se`, om nationell Public antas separat efter pilot.
 - **Testkanaler** använder kommunen, så att tester håller sig lokala.
-- **Meddelanden utan scope** fungerar fortfarande inom länet. Kantrepeatrar, de som länkar ihop två
-  län, släpper inte igenom dem, så de floodar inte nästa län.
+- **Meddelanden utan scope** följer befintlig trafikpolicy under migrationen. Eventuell blockering
+  beslutas separat efter pilot: den kan bryta trafik även inom det egna länet.
 
 Companions kommer sist, i fas 2. Sätter du ett scope på din companion innan repeatrarna runt dig är
 omställda når dina meddelanden **färre**, inte fler.
@@ -223,27 +223,24 @@ Gör det här i ordning. Varje fas börjar först när den förra är klar.
 
 | Fas | Vem | Vad |
 | --- | --- | --- |
-| 1 | Repeatrar | Ägare lägger till de nya namnen **bredvid** de gamla. Vanliga repeatrar behåller `*`, kantrepeatrar släpper `*`. I slutet sätts bottar till sin kommun. Inget går sönder. |
-| 2 | Companions | När repeatrarna runt dem är klara: standard och Public sätts till `se`, testkanaler till kommunen. |
-| 3 | Städning | De gamla `seXX`- och `seXXXX`-namnen tas bort från repeatrarna. |
-| 4 | Vid behov | Om meddelanden utan scope fortfarande stör inom ett län kan repeatrar köra `set flood.max.unscoped 3`. |
+| 1 | Repeatrar | Lägg till nya namn bredvid gamla. Behåll befintlig trafikpolicy, hoppgränser och default scope. |
+| 2 | Pilot och migration | Verifiera radiovägar och versioner. Migrera companions och bottar först när deras vägar stöder namnen. Nationell Public beslutas separat. |
+| 3 | Städning | Ta bort gamla namn först när berörda användare, kanaler och bottar har migrerat och återställning är förberedd. |
+| 4 | Vid behov | Besluta separat om begränsning av trafik utan scope efter mätning och kontroll av beroende radiovägar. |
 
 **Skillnad mot Kanada:** där rensas gamla regioner bort först. Här finns kanaler som redan använder
 `se01`-namnen, så de gamla namnen ligger kvar på repeatrarna tills companions har bytt.
 
 ### Fas 1: Repeatrar
 
-Fas 1 har tre mål:
-
-1. **Få in de nya namnen på varje repeater**, så att var och en bär sin kommun, sitt län, `se` och `eu`.
-2. **Begränsa trafik utan scope mellan län.** Kantrepeatrar släpper meddelanden utan scope.
-3. **I slutet: sätt bottar till sin kommun**, när repeatrarna runt dem bär kommunkoden.
-
-Companions ändrar ingenting i den här fasen.
+Fas 1 är förberedande: lägg till kommun, län, `se` och `eu` utan att ta bort gamla namn eller
+ändra befintlig trafikpolicy. Companions och bottar ändrar ingenting i den här fasen. Repeaterns
+default scope och hoppgränser behålls också tills deras påverkan har verifierats i pilot.
 
 Skriv kommandona ett i taget i repeaterns kommandorad: i MeshCore-appen öppnar du repeatern, loggar
-in som admin och använder kommandorutan, eller så använder du USB-konsolen. Vänta på `OK` innan du
-skickar nästa.
+in som admin och använder kommandorutan, eller så använder du USB-konsolen. Vänta på svaret och kontrollera att det inte börjar med `Err` innan du
+skickar nästa. `region def` svarar med regionträdet, inte `OK`. `region default` visar aktuellt
+standard-scope; när det ändras svarar kommandot med `default scope is now …`.
 
 #### Steg 1: Kontrollera firmware och hitta dina koder
 
@@ -263,49 +260,51 @@ setts några gånger, eller inte på flera veckor, räknas inte.
 
 ```
 region
+region default
+get flood.max
+get flood.max.unscoped
 ```
 
-Finns `se`, `se06`, `se0642` eller liknande redan: låt dem vara. De tas bort i fas 3.
+Spara svaren före ändringen: namn, föräldrar, `F`-flaggor, hemregion (`^`), default scope och
+hoppgränser. Finns `se`, `se06`, `se0642` eller liknande redan: behåll dem och deras trafikpolicy
+under migrationen. Anteckningarna behövs för återställning.
 
 #### Steg 3: Lägg till de nya namnen
 
-Vanlig repeater, firmware 1.16 eller nyare:
+För både vanliga repeatrar och kantrepeatrar, firmware 1.16 eller nyare, när de angivna namnen
+inte redan finns:
 
 ```
 region def se-jkp-mul|* se-jkp|* se|* eu
-region allowf *
-region default se-jkp-mul
 region save
 ```
 
-Kantrepeater, firmware 1.16 eller nyare:
+**Granska befintliga namn först.** `region def` tar inte bort andra namn, men flyttar föräldern
+för namn som redan finns och tillåter flood för alla namn i kommandot. Finns något av namnen
+redan, lägg bara till de saknade med `region put <namn> *` och behåll befintliga föräldrar och
+flaggor. Kör inte hela raden ovan över en befintlig konfiguration utan att granska ändringarna.
+Ett fel kan lämna en delvis ändrad lista: kontrollera med `region` innan du sparar eller fortsätter.
 
-```
-region def se-jkp-mul|* se-jkp|* se|* eu
-region denyf *
-region default se-jkp-mul
-region save
-```
-
-Vad kommandona gör:
+Ändra inte `region allowf *`, `region denyf *`, default scope eller hoppgränser i fas 1.
 
 | Kommando | Vad det gör |
 | --- | --- |
-| `region def …` | Lägger till kommun, län, `se` och `eu`. Tecknen `\|*` hoppar tillbaka till toppen mellan varje namn, så att alla hamnar sida vid sida. Tar inte bort något som redan finns. |
-| `region allowf *` | Vanliga repeatrar skickar vidare meddelanden utan scope. |
-| `region denyf *` | Kantrepeatrar släpper meddelanden utan scope, så att de inte floodar nästa län. |
-| `region default <kommun>` | Repeaterns egna adverts får kommunens scope, så att de håller sig lokala. Finns från firmware 1.15. |
-| `region save` | Behåller inställningarna efter omstart. |
+| `region def …` | Skapar namn, eller uppdaterar deras föräldrar, och tillåter flood för dem. `\|*` återgår till toppen mellan namnen. Svaret är regionträdet. |
+| `region put <namn> *` | Lägger ett namn direkt under `*` och tillåter flood. Kan också ändra ett befintligt namn. |
+| `region default <kommun>` | Ger repeaterns egna adverts kommunens scope. Prövas i fas 2; finns från firmware 1.15. |
+| `region save` | Sparar regioninställningarna så att de finns kvar efter omstart. |
 
-På äldre firmware finns inte `region def`. Då läggs varje namn till för sig med `region put <namn>`
-följt av `region allowf <namn>`.
+På firmware 1.15 saknas `region def`: lägg till varje saknat namn med `region put <namn> *`
+och kontrollera `F`-flaggan. Före 1.15 saknas även `region default`; uppgradera innan stegen
+som använder standard-scope. Kontrollera CLI-stöd på den version som faktiskt används.
 
 **Grannlän (valfritt):** en kantrepeater kan också bära grannlänets kod, till exempel `se-vgr`, så
-att folk nära den kan delta i grannlänets kanaler. Alla andra når grannlänet genom `se`. Vilka län
+att folk nära den kan delta i grannlänets kanaler. Andra kan nå grannlänet genom en radioväg som tillåter `se`. Vilka län
 som räknas som grannlän för din kommun står i [REGIONER.md](REGIONER.md), se [Grannlän](#grannlän).
 
-**Kantrepeater som enda repeater:** en kantrepeater skickar inte vidare närboende som saknar scope.
-Undvik därför att göra den enda repeatern på en ort till kantrepeater.
+**Radiovägar avgör:** att en repeater hör ett grannlän räcker inte som skäl att blockera `*`.
+Den kan samtidigt vara den enda förbindelsen mellan två orter inom det egna länet, även om
+båda orterna har egna repeatrar. Kontrollera vilka vägar som är beroende av noden i piloten.
 
 #### Steg 4: Kontrollera resultatet
 
@@ -313,7 +312,8 @@ Undvik därför att göra den enda repeatern på en ort till kantrepeater.
 region
 ```
 
-För Mullsjö ska listan innehålla:
+För Mullsjö ska de nya namnen finnas och tillåta flood. Om `*` tidigare var tillåtet och
+hemregionen var `*` kan listan se ut så här:
 
 ```
 *^ F
@@ -323,7 +323,10 @@ se F
 eu F
 ```
 
-`F` betyder att repeatern skickar vidare det namnet. Gamla namn som `se06` ligger kvar tills fas 3.
+`F` betyder att repeatern skickar vidare det namnet. `^` markerar hemregion, inte default scope.
+`*` ska behålla sin tidigare `F`-flagga; om den tidigare saknade `F` ska den fortfarande sakna den.
+Kontrollera också med `region default` att standard-scope är oförändrat. Gamla namn som `se06`
+behåller sina föräldrar och flaggor tills migrationen är verifierad. Kontrollera igen efter omstart.
 
 #### Tillåt eller släpp, snabbreferens
 
@@ -337,7 +340,7 @@ eu F
 
 #### Bottar
 
-Det här görs i slutet av fas 1, när repeatrarna runt dig bär din kommunkod. På companionen som
+Det här görs i fas 2, när pilot har verifierat att de radiovägar botten använder bär kommunkoden. På companionen som
 botten använder: sätt **Default Region Scope** till kommunkoden, till exempel `se-jkp-mul`. Sätt
 också alla kanaler som botten skriver i till kommunen.
 
@@ -349,7 +352,22 @@ Har kommunen bara någon enstaka repeater är länet (`se-jkp`) ett bättre val 
 som har dem. Sätter du din standard till `se` innan repeatrarna på dina vägar bär det når dina
 kanalmeddelanden och första DM bara närområdet.
 
-När fas 2 öppnar är det här allt som behövs. Det tar ungefär fem minuter i appen.
+Inled med en pilot över minst två kommuner och två län. Dokumentera den faktiskt testade
+kombinationen av appversion, companion-firmware och repeater-firmware. App 1.43+ och
+companion-firmware 1.15+ behövs för stegen nedan; en uppdaterad app räcker inte ensam.
+Repeater-firmware 1.16+ rekommenderas för kommandona i fas 1. Ingen kombination är ännu
+provkörd på fysisk radio i det här förslaget.
+
+- Testa kanaltrafik utan scope och med gamla respektive nya kommun-, läns- och nationella scopes.
+- Testa nya DM med rensade vägar i båda riktningarna, både inom ett län och över länsgränsen.
+- Kontrollera repeaterns adverts före och efter ett separat försök med `region default <kommun>`.
+- Kontrollera inställningar och leverans efter omstart, och öva återställning enligt nedan.
+- Mät paketmängd, airtime och leveransgrad före och efter varje policyändring. Pröva nationell
+  Public separat från companionens standard för DM; standarden påverkar även dess egna adverts.
+
+Migrera först när berörda radiovägar är verifierade. Stegen nedan beskriver förslagets val av
+standard-scope; nationell Public kräver ett separat beslut efter piloten. Behåll tidigare
+kanalinställning tills det beslutet är taget.
 
 #### Steg 1: Sätt ditt standard-scope
 
@@ -362,7 +380,7 @@ lägg till `se` och välj det.
 
 | Kanal | Scope | Varför |
 | --- | --- | --- |
-| Public | `se` | Alla i Sverige kan prata |
+| Public | `se`, om nationell Public antas efter pilot | Sprids på sammanhängande radiovägar som tillåter `se`, inom hoppgränsen |
 | Testkanaler, som `#test` | Din kommun, till exempel `se-jkp-mul` | Tester håller sig lokala |
 | Bottkanaler | Din kommun | Bottsvar håller sig lokala |
 | Egna kanaler | Kommun, län eller `se` | Välj hur långt den ska nå |
@@ -378,16 +396,19 @@ standard-scope.
 
 | Din standard | Vad som händer med ett DM från Mullsjö till Göteborg |
 | --- | --- |
-| `se-jkp-mul` | Kommer aldrig fram. Repeatrarna utanför Mullsjö bär inte `se-jkp-mul`, så meddelandet stannar vid kommungränsen. Även om det kom fram skulle svaret använda `se-vgr-gbg` och stanna på vägen tillbaka. |
-| `se` | Kommer fram. Alla repeatrar bär `se`, åt båda håll. När vägen är känd går senare DM raka vägen och scopet spelar ingen roll. |
+| `se-jkp-mul` | Flood kan stanna vid en repeater som inte tillåter scopet. Även svarsvägen behöver stödja kontaktens standard-scope. |
+| `se` | Kan komma fram om en sammanhängande radioväg tillåter `se` inom hoppgränsen åt båda håll. När vägen är känd går senare DM raka vägen. |
 
-Haken: en kanal utan eget scope använder också din standard, `se`, och når då hela Sverige. Det är
-vad vi vill för Public, men inte för testkanaler och bottar. Därför sätts de till kommunen i steg 2.
+Haken: en kanal utan eget scope använder också din standard, `se`, och kan då spridas nationellt
+inom hoppgränsen. Det är förslagets val för Public om det antas efter pilot, men inte för
+testkanaler och bottar. Därför sätts de till kommunen i steg 2.
 
 ### Fas 3: Städning
 
-När companions har bytt tas de gamla namnen bort från repeatrarna med `region remove <namn>`, ett i
-taget med det mest indragna först, och sedan `region save`:
+Ta bort gamla namn först när berörda companions, kanaler och bottar har migrerat, piloten
+har verifierat deras trafik och ansvariga har kommit överens om avslutad övergångstid. Att
+telefonappen är uppdaterad räcker inte. Spara konfigurationen och ha återställningskommandon
+redo. Använd `region remove <namn>`, ett i taget med det mest indragna först, och sedan `region save`:
 
 ```
 region remove se0642
@@ -401,26 +422,53 @@ först. `Err - not found` betyder att namnet redan är borta.
 
 ### Fas 4: Bara vid behov
 
-Om meddelanden utan scope fortfarande stör inom ett län efter fas 2 kan repeatrar köra
-`set flood.max.unscoped 3` och sedan `region save`. Meddelanden utan scope stannar då efter tre
-hopp. Meddelanden med scope når fortfarande `flood.max`.
+Begränsning av trafik utan scope är ett separat beslut efter pilot och verifierad migration.
+`region denyf *` blockerar vidarebefordran utan scope i alla riktningar, även inom det egna länet.
+Kontrollera beroende radiovägar och nya användares möjlighet att nå nätet innan det används.
+Efter blockeringen ska `*` sakna `F` i `region`; kör `region save` och kontrollera efter omstart.
+
+Ett alternativ att pröva är `set flood.max.unscoped 3`. Det begränsar trafik utan scope till tre
+hopp och kan också bryta nödvändiga vägar. Dokumentera tidigare värde och kontrollera det med
+`get flood.max.unscoped` efter ändringen och omstart. `set` sparar inställningen direkt.
+
+### Återställning
+
+Vid försämrad leverans: avbryt nästa steg och återställ senaste policyändringen. Om `*` var
+flood-tillåtet före försöket med blockering:
+
+```
+region allowf *
+region save
+region
+```
+
+Återställ ändrad hoppgräns med `set flood.max.unscoped <tidigare värde>` och kontrollera med `get`.
+Återställ repeaterns default scope med `region default <tidigare namn>`; var det tomt, använd
+`region default <null>`. Återställ också companionens standard och kanalscopes i appen.
+
+Har gamla namn tagits bort: återskapa dem med `region put <namn> <tidigare förälder>`, föräldrar
+först. Återställ varje `allowf`/`denyf`-flagga, hemregion och default scope från anteckningarna,
+kör `region save` och kontrollera efter omstart. Ta inte bort nya namn som migrerade klienter
+fortfarande behöver. Upprepa trafiktesterna, inklusive nya DM åt båda håll.
 
 ## Vem hör vad
 
 Exemplet är länken mellan Jönköpings län och Västra Götaland, genom en kantrepeater i Mullsjö som
-också bär grannlänets kod `se-vgr`.
+också bär grannlänets kod `se-vgr`. Tabellen visar en möjlig policy **efter** separat beslut om
+blockering av `*`, inte konfigurationen under fas 1. Alla resultat kräver fungerande radiovägar
+som tillåter scopet och ryms inom hoppgränsen.
 
 | Meddelande | Repeatrar i Jönköpings län | Kantrepeatern i Mullsjö | Repeatrar i Västra Götaland | Vem får det |
 | --- | --- | --- | --- | --- |
-| Ny användare i Jönköping, inget scope | Skickar vidare | Släpper | Nås aldrig | Hela Jönköpings län |
-| Ny användare i Falköping, inget scope | Nås aldrig | Släpper | Skickar vidare | Hela Västra Götaland |
+| Ny användare i Jönköping, inget scope | Skickar vidare | Släpper | Nås aldrig | Noder som nås utan att passera en repeater som blockerar `*` |
+| Ny användare i Falköping, inget scope | Nås aldrig | Släpper | Skickar vidare | Noder som nås utan att passera en repeater som blockerar `*` |
 | Länskanal, `se-jkp` | Skickar vidare | Skickar vidare | Släpper | Jönköpings län |
 | Länskanal, `se-vgr` | Släpper | Skickar vidare | Skickar vidare | Västra Götaland, plus folk nära Mullsjö |
 | Bot i Jönköping, `se-jkp-jkp` | Bara de i Jönköpings kommun | Släpper | Släpper | Jönköpings kommun |
-| DM med companionens standard, `se` | Skickar vidare | Skickar vidare | Skickar vidare | Hela Sverige |
+| DM med companionens standard, `se` | Skickar vidare | Skickar vidare | Skickar vidare | Noder som nås genom radiovägar som tillåter `se` |
 
-En ny användare som inte har satt något scope når alltså fortfarande hela sitt län. Meddelandena
-tar sig bara inte över till nästa län.
+En ny användare utan scope når bara den sammanhängande del av nätet som vidarebefordrar `*`.
+En kantrepeater som blockerar `*` kan dela det egna länets nät; länsgränsen ger ingen garanti.
 
 ## Grannlän
 
@@ -486,12 +534,16 @@ pekar på en kommun och ett län som finns, och att varje par gäller åt båda 
 ## Bra att veta
 
 - **Meddelanden med scope är ungefär tio tecken kortare.**
-- **Repeaterns adverts stannar i kommunen.** Användare i Göteborg ser inte repeatrar i Mullsjö genom
-  flood-adverts.
+- **Repeaterns adverts får kommunens scope om det väljs i fas 2.** De sprids där detta scope
+  tillåts; inställningen behöver verifieras innan den ändras.
 - **Hoppgränsen gäller `se` också.** Är den verkliga vägen genom landet längre än `flood.max`
   stannar meddelandet på vägen.
-- **Versioner:** `region def` kräver repeater-firmware 1.16 eller nyare. Standard-scope i appen
-  kräver MeshCore 1.43 eller nyare. Uppgifterna kommer från MeshCore Canadas förslag.
+- **Versioner:** `region def` kräver repeater-firmware 1.16+. `region default` och companionens
+  standard-scope kräver firmware 1.15+. Appinstruktionerna förutsätter MeshCore-appen 1.43+.
+  CLI-beteendet är kontrollerat mot [firmware 1.16](https://github.com/meshcore-dev/MeshCore/blob/repeater-v1.16.0/src/helpers/CommonCLI.cpp)
+  och [CLI-guiden](https://github.com/meshcore-dev/MeshCore/blob/repeater-v1.16.0/docs/cli_commands.md);
+  [firmware 1.15](https://github.com/meshcore-dev/MeshCore/blob/companion-v1.15.0/src/helpers/CommonCLI.cpp)
+  har stöd för standard-scope. Faktiskt testade versioner ska dokumenteras i piloten.
 - **`offgrid`** från meshat.se påverkas inte. Den regionen handlar om strömförsörjning, inte om
   geografi, och kan bäras bredvid de andra.
 
@@ -502,7 +554,7 @@ Det här är inte avgjort, och synpunkter är välkomna som issues eller pull re
 1. **Koderna.** 12 kommunkoder är vedertagna förkortningar, 14 är kandidater med svagt belägg och
    257 är de tre första bokstäverna. Kandidaterna och länskoderna behöver bekräftas av folk på
    respektive ort. Se [CONTRIBUTING.md](CONTRIBUTING.md).
-2. **Kommandona är inte provkörda.** De följer MeshCore Canadas och meshat.se:s dokumentation men
+2. **Kommandona är inte provkörda på fysisk radio.** CLI-beteendet är granskat mot firmwarekällan men
    har inte testats på en repeater med de nya namnen, och inte ihop med befintliga `seXX`-namn.
 3. **Var går kanten?** Förslaget lägger kantrepeatrarna vid länsgränserna. I stora län som Västra
    Götaland kan det vara för grovt, och i tätbebyggda områden som korsar en länsgräns för fint.
