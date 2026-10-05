@@ -28,8 +28,9 @@ Resten av sidan förklarar hur allt hänger ihop. Du behöver inte förstå det 
 
 ## Kortversionen
 
-Det finns fyra nivåer. Varje repeater bär en kod från varje nivå: sin kommun, sitt län, `se` och `eu`.
-När du skickar ett meddelande avgör scopet hur långt det färdas.
+Det finns fyra nivåer. Grundkonfigurationen är egen kommun, eget län, `se` och `eu`.
+Vissa repeatrar behöver också andra kommun- eller länsscope för att förbinda delar av ett område.
+Nivåerna anger målgruppen; faktisk nåbarhet avgörs av radiovägar, tillåtna scopes och hoppgränser.
 
 | Nivå | Exempel | Betyder |
 | --- | --- | --- |
@@ -40,7 +41,7 @@ När du skickar ett meddelande avgör scopet hur långt det färdas.
 
 Om förslaget antas efter pilot och alla faser är klara:
 
-- **Repeatrar** bär sin kommun, sitt län, `se` och `eu`.
+- **Repeatrar** bär sin kommun, sitt län, `se` och `eu`, plus eventuella överenskomna scopes för transit.
 - **Bottar** använder sin kommun, så att de håller sig lokala.
 - **Companions** har `se` som standard, för att möjliggöra DM på radiovägar som tillåter `se`.
 - **Public** använder `se`, om nationell Public antas separat efter pilot.
@@ -195,6 +196,15 @@ Det en repeater i Mullsjö faktiskt lagrar är en platt lista:
 
 Trädet ovan är till för människor, inte för repeatern.
 
+### När radiovägen lämnar området
+
+Två repeatrar i samma kommun kan behöva en repeater i grannkommunen som förbindelse. Den måste
+också tillåta deras kommunscope om trafik med det scopet ska passera. Samma sak gäller län.
+Att alla noder bär sin egen kod räcker därför inte för att ett område ska hänga ihop.
+
+Kom överens med berörda ägare om minsta nödvändiga extra scopes och verifiera vägarna före
+migration. Se [Sammanhängande radiovägar för scopes](docs/RADIOVAGAR.md) för exempel och prov.
+
 ### Varför `eu`?
 
 Alla repeatrar bär `eu` redan nu, så att ett scope över landsgränser fungerar senare utan att någon
@@ -298,9 +308,13 @@ På firmware 1.15 saknas `region def`: lägg till varje saknat namn med `region 
 och kontrollera `F`-flaggan. Före 1.15 saknas även `region default`; uppgradera innan stegen
 som använder standard-scope. Kontrollera CLI-stöd på den version som faktiskt används.
 
-**Grannlän (valfritt):** en kantrepeater kan också bära grannlänets kod, till exempel `se-vgr`, så
-att folk nära den kan delta i grannlänets kanaler. Andra kan nå grannlänet genom en radioväg som tillåter `se`. Vilka län
-som räknas som grannlän för din kommun står i [REGIONER.md](REGIONER.md), se [Grannlän](#grannlän).
+**Grannlän och transit:** en kantrepeater kan också bära grannlänets kod, till exempel `se-vgr`,
+så att användare nära den kan delta i den länskanalen. För användare längre bort måste varje
+vidarebefordrande repeater på vägen tillåta samma länsscope. `se` kan bära nationell kanaltrafik
+eller DM med det scopet, men ersätter inte `se-vgr` för ett meddelande märkt `se-vgr`.
+Extra kommun- eller länsscope kan också behövas för transit mellan delar av samma område;
+se [radiovägar och transit](docs/RADIOVAGAR.md). Grannlänslistan i [REGIONER.md](REGIONER.md)
+är ett underlag för undersökning, inte en lista över scopes som automatiskt ska tillåtas.
 
 **Radiovägar avgör:** att en repeater hör ett grannlän räcker inte som skäl att blockera `*`.
 Den kan samtidigt vara den enda förbindelsen mellan två orter inom det egna länet, även om
@@ -472,9 +486,9 @@ En kantrepeater som blockerar `*` kan dela det egna länets nät; länsgränsen 
 
 ## Grannlän
 
-Radio bryr sig inte om länsgränser, och över vatten når den längre än över land. Ett grannlän är
-därför inte bara ett län som delar gräns med ditt, utan ett län som ligger **inom räckhåll** från
-din kommun. Listan i [data/grannlan.csv](data/grannlan.csv) är ett utgångsläge, framräknat så här:
+Listan i [data/grannlan.csv](data/grannlan.csv) visar **möjliga grannlän enligt en avståndsmodell**,
+inte uppmätta radiolänkar. Modellen tar med både närhet över land och längre avstånd över vatten,
+så ett föreslaget grannlän behöver inte dela gräns med kommunen. Listan är framräknad så här:
 
 - Varje läns landyta utökas **40 km** åt alla håll, och **80 km** där vägen går över öppet vatten
   från länets egen strand. Som vatten räknas havet och de större sjöarna, till exempel Vänern,
@@ -488,8 +502,8 @@ Det ger 259 av 290 kommuner minst ett grannlän. Mullsjö får `se-vgr` och `se-
 
 Listan säger var en kantrepeater *kan* behövas, inte att den behövs. Den bygger på avstånd på
 kartan och vet ingenting om terräng, antennhöjd eller vilka repeatrar som faktiskt hör varandra.
-Avgörandet är fortfarande det som står under [Steg 1](#steg-1-kontrollera-firmware-och-hitta-dina-koder):
-pratar repeatern regelbundet med repeatrar i ett annat län?
+Både observerade radiolänkar och behov av transit behöver undersökas. Symmetri mellan länspar
+i listan bevisar ingen fungerande radioväg åt något håll; se [radiovägar och transit](docs/RADIOVAGAR.md).
 
 **Manuella justeringar är välkomna.** Listan är uträknad, inte uppmätt, och den som är på plats vet
 bäst. Hör din kommun ett län som saknas, eller står det ett län där som ingen repeater hos er når:

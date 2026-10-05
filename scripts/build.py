@@ -115,7 +115,7 @@ def render(rows, grannlan):
         "**Grund:** *vedertagen* = känd förkortning med belägg · *kandidat* = förkortning med svagt belägg ·",
         "*krock* = ändrad eftersom tre första bokstäverna krockar inom länet · *reserv* = tre första bokstäverna.",
         "",
-        "**Grannlän:** län som ligger inom räckhåll från kommunen, från [data/grannlan.csv](data/grannlan.csv).",
+        "**Grannlän:** möjliga grannlän enligt avståndsmodellen, från [data/grannlan.csv](data/grannlan.csv).",
         "En kantrepeater i kommunen kan bära ett av dem. Se *Grannlän* i [README.md](README.md#grannlän).",
         "",
         "## Hitta ditt län",
