@@ -56,3 +56,17 @@ har kontakt med ett län som saknas, eller saknar kontakt med ett som står där
 
 Texten i `README.md` går också att ändra med en pull request. Större ändringar (nivåer, utrullning,
 namnformat) är bäst att ta som ett issue först, så att fler hinner tycka till.
+
+## SCB-referens och validering
+
+`scripts/build.py` kontrollerar att varje kommun förekommer exakt en gång och att SCB-kod,
+kommunnamn och län stämmer med `data/scb-kommuner-2026.csv`. Scope-koderna kan fortfarande ändras.
+Referensen är hämtad från SCB:s [Län och kommuner 2026 i kodnummerordning](https://www.scb.se/contentassets/7a89e48960f741e08918e489ea36354a/kommunlankod-2026.xlsx)
+den 5 oktober 2026. CSV-filen återger koder och namn från kolumnerna A/B; länsraden gäller
+följande kommunrader. Källfilens SHA-256 är
+`231788b772f641904e9a8a5bfdc6589706e36d73ee7ccff30bdfb23cb462b50a`.
+Uppdatera referensen separat med ny SCB-källa när den administrativa indelningen ändras.
+Ingen nätåtkomst behövs för validering eller CI.
+
+Kör regressionstesterna med `python3 -m unittest discover -s tests` och dokumentkontrollen med
+`python3 scripts/build.py --check`.
