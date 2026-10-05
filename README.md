@@ -21,7 +21,7 @@ Se [CONTRIBUTING.md](CONTRIBUTING.md) och skicka en pull request.
 | --- | --- | --- |
 | Använder MeshCore-appen med en companion | **Inget än.** Låt inställningarna vara. [Fas 2](#fas-2-companions) består av två inställningar. | Tidigast när fas 1 är klar |
 | Äger en repeater | Inget förrän förslaget är antaget. Sedan [fas 1](#fas-1-repeatrar). | När förslaget är antaget |
-| Kör en bot | Sätt den till din kommun, se [Bottar](#bottar). | I fas 2, efter verifierad pilot |
+| Kör en bot | Välj scope för utskick och DM var för sig, se [Bottar](#bottar). | I fas 2, efter verifierad pilot |
 | Vet vad din ort kallas | Kontrollera koden i [REGIONER.md](REGIONER.md) och föreslå en bättre. | Nu |
 
 Resten av sidan förklarar hur allt hänger ihop. Du behöver inte förstå det för att följa stegen.
@@ -41,7 +41,8 @@ När du skickar ett meddelande avgör scopet hur långt det färdas.
 Om förslaget antas efter pilot och alla faser är klara:
 
 - **Repeatrar** bär sin kommun, sitt län, `se` och `eu`.
-- **Bottar** använder sin kommun, så att de håller sig lokala.
+- **Bottar** begränsar lokala kanalutskick till målgruppen. Default scope väljs efter vilka
+  användare deras DM-tjänst ska nå.
 - **Companions** har `se` som standard, för att möjliggöra DM på radiovägar som tillåter `se`.
 - **Public** använder `se`, om nationell Public antas separat efter pilot.
 - **Testkanaler** använder kommunen, så att tester håller sig lokala.
@@ -340,11 +341,17 @@ behåller sina föräldrar och flaggor tills migrationen är verifierad. Kontrol
 
 #### Bottar
 
-Det här görs i fas 2, när pilot har verifierat att de radiovägar botten använder bär kommunkoden. På companionen som
-botten använder: sätt **Default Region Scope** till kommunkoden, till exempel `se-jkp-mul`. Sätt
-också alla kanaler som botten skriver i till kommunen.
+Migrera bottar i fas 2 efter test med den faktiska botklienten. Sätt explicit kommun- eller
+länsscope på lokala kanalutskick. Välj companionens **Default Region Scope** efter vilka
+användare botten ska svara via DM, inte enbart efter var botten står.
 
-Har kommunen bara någon enstaka repeater är länet (`se-jkp`) ett bättre val för botten.
+En bot med kommunscope som default kan ta emot en fråga med `se` men få sin ACK/vägretur
+blockerad på vägen tillbaka. En bot som ska svara över länsgränser behöver därför ett scope
+som fungerar åt båda håll, exempelvis `se`, samtidigt som lokala kanalutskick begränsas separat.
+Default påverkar också botens egna flood-adverts. Kontrollera att klientens tillfälliga scopeval
+inte stör DM-returer, även när en fråga kommer under ett lokalt utskick.
+
+Se [Scopes för bottar](docs/BOTTAR.md) för profiler, firmwareunderlag och prov med rensade vägar.
 
 ### Fas 2: Companions
 
@@ -382,7 +389,7 @@ lägg till `se` och välj det.
 | --- | --- | --- |
 | Public | `se`, om nationell Public antas efter pilot | Sprids på sammanhängande radiovägar som tillåter `se`, inom hoppgränsen |
 | Testkanaler, som `#test` | Din kommun, till exempel `se-jkp-mul` | Tester håller sig lokala |
-| Bottkanaler | Din kommun | Bottsvar håller sig lokala |
+| Bottkanaler | Minsta scope som når tjänstens målgrupp | Begränsar kanalutskick; botens DM-policy väljs separat |
 | Egna kanaler | Kommun, län eller `se` | Välj hur långt den ska nå |
 
 Meddelanden med scope är lite kortare. MeshCore Canada såg i sina tester att gränsen på Public sjönk
@@ -464,7 +471,7 @@ som tillåter scopet och ryms inom hoppgränsen.
 | Ny användare i Falköping, inget scope | Nås aldrig | Släpper | Skickar vidare | Noder som nås utan att passera en repeater som blockerar `*` |
 | Länskanal, `se-jkp` | Skickar vidare | Skickar vidare | Släpper | Jönköpings län |
 | Länskanal, `se-vgr` | Släpper | Skickar vidare | Skickar vidare | Västra Götaland, plus folk nära Mullsjö |
-| Bot i Jönköping, `se-jkp-jkp` | Bara de i Jönköpings kommun | Släpper | Släpper | Jönköpings kommun |
+| Botens kanalutskick i Jönköping, `se-jkp-jkp` | Bara de i Jönköpings kommun | Släpper | Släpper | Jönköpings kommun |
 | DM med companionens standard, `se` | Skickar vidare | Skickar vidare | Skickar vidare | Noder som nås genom radiovägar som tillåter `se` |
 
 En ny användare utan scope når bara den sammanhängande del av nätet som vidarebefordrar `*`.
