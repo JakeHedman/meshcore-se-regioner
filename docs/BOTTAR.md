@@ -52,6 +52,7 @@ som får använda tjänsten. Sådana begränsningar behöver botprogrammet hante
 ## Prov före migration
 
 Använd testkontakter med utbytta kontaktuppgifter men rensade DM-vägar i **båda** companionerna.
+Rensa på nytt inför varje prov av första DM och kontrollera att frågan skickas som flood.
 Radera inte administratörens enda fungerande väg till en repeater. Anteckna version av botklient,
 companion-firmware, båda sidors default scope och klientens eventuella override.
 
