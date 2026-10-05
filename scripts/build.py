@@ -18,6 +18,12 @@ GRUNDER = {"vedertagen", "kandidat", "krock", "reserv"}
 VIA = {"land", "vatten", "omvand", "lokal"}
 GRANNLAN_KOLUMNER = ["scb_kommun", "kommun", "scb_grannlan", "grannlan", "via"]
 KOD = re.compile(r"^[a-z]{3}$")
+SWEDISH_ORDER = str.maketrans({"å": "{", "ä": "|", "ö": "}"})
+
+
+def swedish_sort_key(name):
+    """Sortera å, ä och ö efter z utan beroende på systemets locale."""
+    return name.casefold().translate(SWEDISH_ORDER)
 
 
 def load():
@@ -74,7 +80,9 @@ def validate(rows):
         if not KOD.match(r["lan_kod"]):
             errors.append(f"{where}: länskoden '{r['lan_kod']}' är inte tre tecken a-z")
         if not KOD.match(r["kommun_kod"]):
-            errors.append(f"{where}: kommunkoden '{r['kommun_kod']}' är inte tre tecken a-z")
+            errors.append(
+                f"{where}: kommunkoden '{r['kommun_kod']}' är inte tre tecken a-z"
+            )
         if r["grund"] not in GRUNDER:
             errors.append(f"{where}: okänd grund '{r['grund']}'")
         if not r["scb_kommun"].startswith(r["scb_lan"]):
@@ -110,10 +118,17 @@ def render(rows, grannlan):
         "**Grannlän:** län som ligger inom räckhåll från kommunen, från [data/grannlan.csv](data/grannlan.csv).",
         "En kantrepeater i kommunen kan bära ett av dem. Se *Grannlän* i [README.md](README.md#grannlän).",
         "",
+        "## Hitta ditt län",
+        "",
     ]
+    for ks in by_lan.values():
+        out.append(f"- [{ks[0]['lan']}](#se-{ks[0]['lan_kod']})")
+    out.append("")
     for lan, ks in by_lan.items():
         lk = ks[0]["lan_kod"]
         out += [
+            f'<a id="se-{lk}"></a>',
+            "",
             f"## {ks[0]['lan']} – `se-{lk}`",
             "",
             f"Ersätter `se{lan}`.",
@@ -121,7 +136,7 @@ def render(rows, grannlan):
             "| Kommun | Region | Ersätter | Grund | Alternativ | Grannlän |",
             "| --- | --- | --- | --- | --- | --- |",
         ]
-        for r in sorted(ks, key=lambda r: r["kommun"]):
+        for r in sorted(ks, key=lambda r: swedish_sort_key(r["kommun"])):
             alt = ", ".join(f"`{a}`" for a in r["alternativ"].split())
             grann = ", ".join(
                 f"`se-{lan_kod[g]}`" for g in sorted(grannar.get(r["scb_kommun"], []))

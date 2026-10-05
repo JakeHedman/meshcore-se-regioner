@@ -9,6 +9,32 @@ Den här filen genereras från [data/regioner.csv](data/regioner.csv) med `pytho
 **Grannlän:** län som ligger inom räckhåll från kommunen, från [data/grannlan.csv](data/grannlan.csv).
 En kantrepeater i kommunen kan bära ett av dem. Se *Grannlän* i [README.md](README.md#grannlän).
 
+## Hitta ditt län
+
+- [Stockholms län](#se-sth)
+- [Uppsala län](#se-upp)
+- [Södermanlands län](#se-sor)
+- [Östergötlands län](#se-ost)
+- [Jönköpings län](#se-jkp)
+- [Kronobergs län](#se-kro)
+- [Kalmar län](#se-kal)
+- [Gotlands län](#se-gtl)
+- [Blekinge län](#se-blk)
+- [Skåne län](#se-ska)
+- [Hallands län](#se-hal)
+- [Västra Götalands län](#se-vgr)
+- [Värmlands län](#se-var)
+- [Örebro län](#se-ore)
+- [Västmanlands län](#se-vml)
+- [Dalarnas län](#se-dal)
+- [Gävleborgs län](#se-gav)
+- [Västernorrlands län](#se-vnl)
+- [Jämtlands län](#se-jam)
+- [Västerbottens län](#se-vbt)
+- [Norrbottens län](#se-nbt)
+
+<a id="se-sth"></a>
+
 ## Stockholms län – `se-sth`
 
 Ersätter `se01`.
@@ -42,6 +68,8 @@ Ersätter `se01`.
 | Värmdö | `se-sth-var` | `se0120` | reserv |  | `se-upp`, `se-sor` |
 | Österåker | `se-sth-ost` | `se0117` | reserv |  | `se-upp`, `se-sor` |
 
+<a id="se-upp"></a>
+
 ## Uppsala län – `se-upp`
 
 Ersätter `se03`.
@@ -56,6 +84,8 @@ Ersätter `se03`.
 | Uppsala | `se-upp-upp` | `se0380` | reserv | `ups` | `se-sth`, `se-sor`, `se-vml`, `se-dal`, `se-gav` |
 | Älvkarleby | `se-upp-alv` | `se0319` | reserv |  | `se-sth`, `se-vml`, `se-dal`, `se-gav` |
 | Östhammar | `se-upp-ost` | `se0382` | reserv |  | `se-sth`, `se-gav` |
+
+<a id="se-sor"></a>
 
 ## Södermanlands län – `se-sor`
 
@@ -72,6 +102,8 @@ Ersätter `se04`.
 | Strängnäs | `se-sor-str` | `se0486` | reserv |  | `se-sth`, `se-upp`, `se-vml` |
 | Trosa | `se-sor-tro` | `se0488` | reserv |  | `se-sth`, `se-upp`, `se-ost` |
 | Vingåker | `se-sor-vin` | `se0428` | reserv |  | `se-ost`, `se-ore`, `se-vml` |
+
+<a id="se-ost"></a>
 
 ## Östergötlands län – `se-ost`
 
@@ -93,6 +125,8 @@ Ersätter `se05`.
 | Åtvidaberg | `se-ost-atv` | `se0561` | reserv |  | `se-kal` |
 | Ödeshög | `se-ost-ode` | `se0509` | reserv |  | `se-jkp`, `se-vgr`, `se-ore` |
 
+<a id="se-jkp"></a>
+
 ## Jönköpings län – `se-jkp`
 
 Ersätter `se06`.
@@ -113,6 +147,8 @@ Ersätter `se06`.
 | Vetlanda | `se-jkp-vet` | `se0685` | reserv |  | `se-ost`, `se-kro`, `se-kal` |
 | Värnamo | `se-jkp-var` | `se0683` | reserv | `vmo` | `se-kro`, `se-hal`, `se-vgr` |
 
+<a id="se-kro"></a>
+
 ## Kronobergs län – `se-kro`
 
 Ersätter `se07`.
@@ -127,6 +163,8 @@ Ersätter `se07`.
 | Uppvidinge | `se-kro-upp` | `se0760` | reserv |  | `se-jkp`, `se-kal`, `se-blk` |
 | Växjö | `se-kro-vxo` | `se0780` | vedertagen | `vax` | `se-jkp`, `se-kal`, `se-blk`, `se-ska` |
 | Älmhult | `se-kro-alm` | `se0765` | reserv |  | `se-jkp`, `se-blk`, `se-ska`, `se-hal` |
+
+<a id="se-kal"></a>
 
 ## Kalmar län – `se-kal`
 
@@ -147,6 +185,8 @@ Ersätter `se08`.
 | Vimmerby | `se-kal-vim` | `se0884` | reserv |  | `se-ost`, `se-jkp` |
 | Västervik | `se-kal-vas` | `se0883` | reserv | `vvk`, `vik` | `se-sor`, `se-ost`, `se-jkp` |
 
+<a id="se-gtl"></a>
+
 ## Gotlands län – `se-gtl`
 
 Ersätter `se09`.
@@ -154,6 +194,8 @@ Ersätter `se09`.
 | Kommun | Region | Ersätter | Grund | Alternativ | Grannlän |
 | --- | --- | --- | --- | --- | --- |
 | Gotland | `se-gtl-got` | `se0980` | reserv | `gtl`, `vby` | `se-sth`, `se-kal` |
+
+<a id="se-blk"></a>
 
 ## Blekinge län – `se-blk`
 
@@ -166,6 +208,8 @@ Ersätter `se10`.
 | Olofström | `se-blk-olo` | `se1060` | reserv |  | `se-kro`, `se-ska` |
 | Ronneby | `se-blk-ron` | `se1081` | reserv | `rby` | `se-kro`, `se-kal`, `se-ska` |
 | Sölvesborg | `se-blk-sol` | `se1083` | reserv | `sbg` | `se-kro`, `se-ska` |
+
+<a id="se-ska"></a>
 
 ## Skåne län – `se-ska`
 
@@ -202,10 +246,12 @@ Ersätter `se12`.
 | Trelleborg | `se-ska-tre` | `se1287` | reserv | `tbg` |  |
 | Vellinge | `se-ska-vel` | `se1233` | reserv |  |  |
 | Ystad | `se-ska-yst` | `se1286` | reserv | `ysd` | `se-blk` |
-| Ängelholm | `se-ska-ang` | `se1292` | reserv | `agh` | `se-kro`, `se-hal` |
 | Åstorp | `se-ska-ast` | `se1277` | reserv |  | `se-kro`, `se-hal` |
+| Ängelholm | `se-ska-ang` | `se1292` | reserv | `agh` | `se-kro`, `se-hal` |
 | Örkelljunga | `se-ska-ork` | `se1257` | reserv |  | `se-kro`, `se-hal` |
 | Östra Göinge | `se-ska-ost` | `se1256` | reserv |  | `se-kro`, `se-blk`, `se-hal` |
+
+<a id="se-hal"></a>
 
 ## Hallands län – `se-hal`
 
@@ -219,6 +265,8 @@ Ersätter `se13`.
 | Kungsbacka | `se-hal-kba` | `se1384` | vedertagen |  | `se-vgr` |
 | Laholm | `se-hal-lah` | `se1381` | reserv |  | `se-jkp`, `se-kro`, `se-ska` |
 | Varberg | `se-hal-vbg` | `se1383` | vedertagen |  | `se-jkp`, `se-ska`, `se-vgr` |
+
+<a id="se-vgr"></a>
 
 ## Västra Götalands län – `se-vgr`
 
@@ -271,10 +319,12 @@ Ersätter `se14`.
 | Uddevalla | `se-vgr-udd` | `se1485` | reserv |  | `se-hal` |
 | Ulricehamn | `se-vgr-ulr` | `se1491` | reserv |  | `se-jkp` |
 | Vara | `se-vgr-var` | `se1470` | reserv |  | `se-jkp` |
-| Vänersborg | `se-vgr-vbg` | `se1487` | kandidat | `van` | `se-var` |
 | Vårgårda | `se-vgr-vgd` | `se1442` | krock | `var` | `se-hal` |
+| Vänersborg | `se-vgr-vbg` | `se1487` | kandidat | `van` | `se-var` |
 | Åmål | `se-vgr-ama` | `se1492` | reserv |  | `se-var` |
 | Öckerö | `se-vgr-ock` | `se1407` | reserv |  | `se-hal` |
+
+<a id="se-var"></a>
 
 ## Värmlands län – `se-var`
 
@@ -299,6 +349,8 @@ Ersätter `se17`.
 | Torsby | `se-var-tor` | `se1737` | reserv |  | `se-dal` |
 | Årjäng | `se-var-arj` | `se1765` | reserv |  | `se-vgr` |
 
+<a id="se-ore"></a>
+
 ## Örebro län – `se-ore`
 
 Ersätter `se18`.
@@ -318,6 +370,8 @@ Ersätter `se18`.
 | Nora | `se-ore-nor` | `se1884` | reserv |  | `se-var`, `se-vml`, `se-dal` |
 | Örebro | `se-ore-ore` | `se1880` | reserv | `orb` | `se-sor`, `se-ost`, `se-var`, `se-vml`, `se-dal` |
 
+<a id="se-vml"></a>
+
 ## Västmanlands län – `se-vml`
 
 Ersätter `se19`.
@@ -334,6 +388,8 @@ Ersätter `se19`.
 | Skinnskatteberg | `se-vml-ski` | `se1904` | reserv |  | `se-sor`, `se-ore`, `se-dal` |
 | Surahammar | `se-vml-sur` | `se1907` | reserv |  | `se-upp`, `se-sor`, `se-ore`, `se-dal` |
 | Västerås | `se-vml-vas` | `se1980` | reserv | `vst` | `se-sth`, `se-upp`, `se-sor`, `se-ore`, `se-dal` |
+
+<a id="se-dal"></a>
 
 ## Dalarnas län – `se-dal`
 
@@ -357,6 +413,8 @@ Ersätter `se20`.
 | Vansbro | `se-dal-van` | `se2021` | reserv |  | `se-var`, `se-ore` |
 | Älvdalen | `se-dal-alv` | `se2039` | reserv |  | `se-var`, `se-gav`, `se-jam` |
 
+<a id="se-gav"></a>
+
 ## Gävleborgs län – `se-gav`
 
 Ersätter `se21`.
@@ -374,6 +432,8 @@ Ersätter `se21`.
 | Sandviken | `se-gav-san` | `se2181` | reserv |  | `se-upp`, `se-vml`, `se-dal` |
 | Söderhamn | `se-gav-sod` | `se2182` | reserv | `soo` | `se-upp`, `se-dal` |
 
+<a id="se-vnl"></a>
+
 ## Västernorrlands län – `se-vnl`
 
 Ersätter `se22`.
@@ -387,6 +447,8 @@ Ersätter `se22`.
 | Timrå | `se-vnl-tim` | `se2262` | reserv |  | `se-gav`, `se-jam` |
 | Ånge | `se-vnl-ang` | `se2260` | reserv |  | `se-gav`, `se-jam` |
 | Örnsköldsvik | `se-vnl-ovk` | `se2284` | vedertagen | `ovi` | `se-jam`, `se-vbt` |
+
+<a id="se-jam"></a>
 
 ## Jämtlands län – `se-jam`
 
@@ -402,6 +464,8 @@ Ersätter `se23`.
 | Strömsund | `se-jam-str` | `se2313` | reserv |  | `se-vnl`, `se-vbt` |
 | Åre | `se-jam-are` | `se2321` | reserv |  |  |
 | Östersund | `se-jam-osd` | `se2380` | kandidat | `ost` | `se-vnl` |
+
+<a id="se-vbt"></a>
 
 ## Västerbottens län – `se-vbt`
 
@@ -424,6 +488,8 @@ Ersätter `se24`.
 | Vindeln | `se-vbt-vin` | `se2404` | reserv |  | `se-vnl` |
 | Vännäs | `se-vbt-van` | `se2460` | reserv |  | `se-vnl` |
 | Åsele | `se-vbt-ase` | `se2463` | reserv |  | `se-vnl`, `se-jam` |
+
+<a id="se-nbt"></a>
 
 ## Norrbottens län – `se-nbt`
 
