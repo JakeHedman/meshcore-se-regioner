@@ -358,12 +358,11 @@ companion-firmware 1.15+ behövs för stegen nedan; en uppdaterad app räcker in
 Repeater-firmware 1.16+ rekommenderas för kommandona i fas 1. Ingen kombination är ännu
 provkörd på fysisk radio i det här förslaget.
 
-- Testa kanaltrafik utan scope och med gamla respektive nya kommun-, läns- och nationella scopes.
-- Testa nya DM med rensade vägar i båda riktningarna, både inom ett län och över länsgränsen.
-- Kontrollera repeaterns adverts före och efter ett separat försök med `region default <kommun>`.
-- Kontrollera inställningar och leverans efter omstart, och öva återställning enligt nedan.
-- Mät paketmängd, airtime och leveransgrad före och efter varje policyändring. Pröva nationell
-  Public separat från companionens standard för DM; standarden påverkar även dess egna adverts.
+Använd [pilotprotokollet](docs/PILOT.md): ange målgrupp, testpunkter, krav och återställning före
+försöket. Jämför en ändring i taget mot baslinjen. Redovisa nya DM med rensade vägar separat från
+etablerade DM, och bedöm leverans tillsammans med belastningen på gemensamma radiovägar.
+Protokollet innehåller trafikfall för gamla och nya scopes, bottar, adverts, omstart och återställning.
+Ett godkänt lokalt prov är inte i sig ett underlag för nationell Public.
 
 Migrera först när berörda radiovägar är verifierade. Stegen nedan beskriver förslagets val av
 standard-scope; nationell Public kräver ett separat beslut efter piloten. Behåll tidigare
@@ -430,6 +429,9 @@ Efter blockeringen ska `*` sakna `F` i `region`; kör `region save` och kontroll
 Ett alternativ att pröva är `set flood.max.unscoped 3`. Det begränsar trafik utan scope till tre
 hopp och kan också bryta nödvändiga vägar. Dokumentera tidigare värde och kontrollera det med
 `get flood.max.unscoped` efter ändringen och omstart. `set` sparar inställningen direkt.
+Om tidigare värde är `255` (följer `flood.max`) kan CLI i firmware 1.16 inte återställa det
+med `set`, som bara accepterar 0–64. Lämna då inställningen oförändrad tills en annan
+återställningsmetod har verifierats; se [pilotprotokollet](docs/PILOT.md).
 
 ### Återställning
 
